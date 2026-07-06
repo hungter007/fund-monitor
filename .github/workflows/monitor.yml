@@ -48,6 +48,7 @@ jobs:
     - name: Run Monitor
       env:
         PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        BIGMODEL_API_KEY: ${{ secrets.BIGMODEL_API_KEY }}
       run: |
         cd monitor
         python monitor.py

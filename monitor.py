@@ -40,15 +40,29 @@ class FundMonitor:
             topic = self.config['pushplus'].get('topic', '')
             self.notifier = PushPlusNotifier(token, topic)
 
-        # 初始化AI分析器
+        # 初始化AI分析器（优先从环境变量读取API Key）
         bigmodel_config = self.config.get('bigmodel', {})
-        if bigmodel_config.get('api_key') and bigmodel_config['api_key'] != 'YOUR_BIGMODEL_API_KEY':
+        api_key = None
+
+        # 优先从环境变量读取
+        env_key = os.environ.get('BIGMODEL_API_KEY')
+        if env_key:
+            api_key = env_key
+            print("✓ 从环境变量读取BigModel API Key")
+        # 其次从配置文件读取
+        elif bigmodel_config.get('api_key') and bigmodel_config['api_key'] != 'YOUR_BIGMODEL_API_KEY':
+            api_key = bigmodel_config['api_key']
+            print("⚠️ 从配置文件读取BigModel API Key（建议使用环境变量）")
+
+        if api_key:
             self.ai_analyzer = BigModelAnalyzer(
-                api_key=bigmodel_config['api_key'],
+                api_key=api_key,
                 model=bigmodel_config.get('model', 'glm-4-flash'),
                 base_url=bigmodel_config.get('base_url', 'https://open.bigmodel.cn/api/paas/v4/chat/completions')
             )
             print("✓ AI分析器已启用")
+        else:
+            print("ℹ️ BigModel API Key未配置，将使用备用分析")
 
     def _load_config(self, config_path: str) -> Dict:
         """加载配置文件"""

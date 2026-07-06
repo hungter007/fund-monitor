@@ -45,6 +45,11 @@ git push -u origin main
 | `PUSHPLUS_TOKEN` | `b7ccb2a3915949bd97c2822e95a5f4a2` | PushPlus推送Token |
 | `BIGMODEL_API_KEY` | `8ece9829598a4facafabd8cb47748fc7.FdfZoGatoevxrSwp` | BigModel API密钥 |
 
+**⚠️ 安全说明：**
+- API密钥存储在GitHub Secrets中，不会暴露在代码中
+- Secrets不会被记录在Git历史中
+- 只有Actions工作流可以访问这些密钥
+
 ### 4️⃣ 启用GitHub Actions
 
 **步骤：**
