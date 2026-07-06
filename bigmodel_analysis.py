@@ -167,7 +167,7 @@ class BigModelAnalyzer:
         - 今开: {open_price:.4f}
         - 最高: {high_price:.4f}
         - 最低: {low_price:.4f}
-        - 成交量: {volume:.2f}亿手
+        - 成交量: {volume:.2f}万手
         - 成交额: {amount:.2f}亿元
         - 5日均线: {ma5:.4f}
         

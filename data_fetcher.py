@@ -61,10 +61,17 @@ class DataFetcher:
                     current_price = float(parts[3]) if parts[3] else 0
                     prev_close = float(parts[4]) if parts[4] else 0
                     open_price = float(parts[5]) if parts[5] else 0
-                    volume = float(parts[6]) / 100000000 if parts[6] else 0  # 转为亿手
+
+                    # 成交量数据处理（腾讯API返回的是手数）
+                    raw_volume = float(parts[6]) if parts[6] else 0
+                    volume = raw_volume / 10000  # 转换为万手
+
                     high = float(parts[33]) if parts[33] else 0
                     low = float(parts[34]) if parts[34] else 0
-                    amount = float(parts[37]) / 100000000 if parts[37] else 0  # 转为亿元
+
+                    # 成交额数据处理（腾讯API返回的是元）
+                    raw_amount = float(parts[37]) if parts[37] else 0
+                    amount = raw_amount / 100000000  # 转换为亿元
 
                     change_pct = ((current_price - prev_close) / prev_close) * 100 if prev_close > 0 else 0
 
@@ -76,8 +83,8 @@ class DataFetcher:
                         'high': high,
                         'low': low,
                         'prev_close': prev_close,
-                        'volume': volume,
-                        'amount': amount,
+                        'volume': volume,  # 万手
+                        'amount': amount,  # 亿元
                         'change_pct': change_pct,
                         'update_time': parts[30] if len(parts) > 30 else '',
                     }

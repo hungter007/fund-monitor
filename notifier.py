@@ -275,11 +275,15 @@ class PushPlusNotifier:
                         </div>
                         <div class="data-row">
                             <span class="label">成交量:</span>
-                            <span class="value">{volume:,.0f}</span>
+                            <span class="value">{volume:,.2f}万手</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">成交额:</span>
+                            <span class="value">{amount:.2f}亿元</span>
                         </div>
                         <div class="data-row">
                             <span class="label">5日均量:</span>
-                            <span class="value">{avg_volume:.2f}亿</span>
+                            <span class="value">{avg_volume:.2f}亿元</span>
                         </div>
                     </div>
 
@@ -443,7 +447,7 @@ class PushPlusNotifier:
                         <div style="font-size: 12px; color: #999; margin-top: 4px;">
                             <span style="margin-right: 15px;">🏦 持仓: {holdings:,}</span>
                             <span style="margin-right: 15px; color: {'red' if profit_pct < 0 else 'green'};">💵 盈亏: {profit_pct:+.2f}%</span>
-                            <span style="margin-right: 15px;">📦 成交量: {volume:,.0f}</span>
+                            <span style="margin-right: 15px;">📦 成交量: {volume:,.2f}万手</span>
                         </div>
                     </div>
             """
