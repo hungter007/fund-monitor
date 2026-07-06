@@ -1,6 +1,6 @@
 {
   "pushplus": {
-    "token": "b7ccb2a3915949bd97c2822e95a5f4a2",
+    "token_env": "PUSHPLUS_TOKEN",
     "topic": "",
     "template": "html"
   },

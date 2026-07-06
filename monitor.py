@@ -34,11 +34,26 @@ class FundMonitor:
         self.notifier = None
         self.ai_analyzer = None
 
-        # 初始化推送器
-        if self.config.get('pushplus', {}).get('token'):
-            token = self.config['pushplus']['token']
-            topic = self.config['pushplus'].get('topic', '')
+        # 初始化推送器（优先从环境变量读取Token）
+        pushplus_config = self.config.get('pushplus', {})
+        token = None
+        topic = pushplus_config.get('topic', '')
+
+        # 优先从环境变量读取
+        env_token = os.environ.get('PUSHPLUS_TOKEN')
+        if env_token:
+            token = env_token
+            print("✓ 从环境变量读取PushPlus Token")
+        # 其次从配置文件读取（向后兼容）
+        elif pushplus_config.get('token') and pushplus_config['token'] != 'YOUR_PUSHPLUS_TOKEN':
+            token = pushplus_config['token']
+            print("⚠️ 从配置文件读取PushPlus Token（建议使用环境变量）")
+
+        if token:
             self.notifier = PushPlusNotifier(token, topic)
+            print("✓ 推送通知器已启用")
+        else:
+            print("ℹ️ PushPlus Token未配置，将不发送推送通知")
 
         # 初始化AI分析器（优先从环境变量读取API Key）
         bigmodel_config = self.config.get('bigmodel', {})
