@@ -1,0 +1,75 @@
+{
+  "pushplus": {
+    "token": "b7ccb2a3915949bd97c2822e95a5f4a2",
+    "topic": "",
+    "template": "html"
+  },
+  "bigmodel": {
+    "api_key": "8ece9829598a4facafabd8cb47748fc7.FdfZoGatoevxrSwp",
+    "model": "glm-5.2",
+    "base_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+  },
+  "targets": [
+    {
+      "code": "588170",
+      "name": "半导体ETF",
+      "type": "ETF",
+      "holdings": 10000,
+      "cost_price": 1.25
+    },
+    {
+      "code": "515880",
+      "name": "通信ETF",
+      "type": "ETF",
+      "holdings": 27300,
+      "cost_price": 1.205
+    },
+    {
+      "code": "600584",
+      "name": "长电科技",
+      "type": "STOCK",
+      "holdings": 1000,
+      "cost_price": 85.0
+    },
+    {
+      "code": "000636",
+      "name": "风华高科",
+      "type": "STOCK",
+      "holdings": 500,
+      "cost_price": 74.0
+    },
+    {
+      "code": "588200",
+      "name": "芯片ETF",
+      "type": "ETF",
+      "holdings": 3000,
+      "cost_price": 4.5
+    },
+    {
+      "code": "562800",
+      "name": "稀有金属ETF",
+      "type": "ETF",
+      "holdings": 3000,
+      "cost_price": 1.18
+    }
+  ],
+  "rules": {
+    "ma5_break": {
+      "enabled": true,
+      "action": "reduce_50"
+    },
+    "volume_break": {
+      "enabled": true,
+      "action": "sell_all"
+    },
+    "doji_top": {
+      "enabled": true,
+      "action": "reduce_30_50"
+    }
+  },
+  "schedule": {
+    "market_open": "09:30",
+    "market_close": "15:00",
+    "check_interval_minutes": 30
+  }
+}
