@@ -77,16 +77,33 @@ class PushPlusNotifier:
         if not analysis or analysis.get('action') == '持有':
             return True
 
-        # 构建HTML消息
+        # 构建HTML消息（添加None值保护）
         target_type = 'ETF' if target['type'] == 'ETF' else '股票'
-        price = realtime_data.get('price', realtime_data.get('nav', 0))
-        change_pct = realtime_data.get('change_pct', 0)
-        prev_close = realtime_data.get('prev_close', 0)
-        ma5 = realtime_data.get('ma5', 0)
-        avg_volume = realtime_data.get('avg_volume', 0)
-        volume = realtime_data.get('volume', 0)
-        high = realtime_data.get('high', price)
-        low = realtime_data.get('low', price)
+
+        # 安全获取数据，设置默认值
+        price = realtime_data.get('price') or realtime_data.get('nav') or 0.0
+        change_pct = realtime_data.get('change_pct') or 0.0
+        prev_close = realtime_data.get('prev_close') or 0.0
+        ma5 = realtime_data.get('ma5') or 0.0
+        avg_volume = realtime_data.get('avg_volume') or 0.0
+        volume = realtime_data.get('volume') or 0
+        high = realtime_data.get('high') or price
+        low = realtime_data.get('low') or price
+
+        # 确保数值类型正确
+        try:
+            price = float(price) if price else 0.0
+            change_pct = float(change_pct) if change_pct else 0.0
+            prev_close = float(prev_close) if prev_close else 0.0
+            ma5 = float(ma5) if ma5 else 0.0
+            avg_volume = float(avg_volume) if avg_volume else 0.0
+            volume = int(volume) if volume else 0
+            high = float(high) if high else price
+            low = float(low) if low else price
+        except (ValueError, TypeError):
+            price = change_pct = prev_close = ma5 = avg_volume = 0.0
+            volume = 0
+            high = low = price
 
         # 计算盈亏情况
         holdings = target.get('holdings', 0)
@@ -336,19 +353,31 @@ class PushPlusNotifier:
             analysis = result.get('analysis', {})
             realtime = result.get('realtime_data', {})
 
-            price = realtime.get('price', realtime.get('nav', 0))
-            change_pct = realtime.get('change_pct', 0)
+            # 安全获取数据，设置默认值
+            price = realtime.get('price') or realtime.get('nav') or 0.0
+            change_pct = realtime.get('change_pct') or 0.0
             action = analysis.get('action', '持有')
-            ma5 = realtime.get('ma5', 0)
-            volume = realtime.get('volume', 0)
-            avg_volume = realtime.get('avg_volume', 0)
+            ma5 = realtime.get('ma5') or 0.0
+            volume = realtime.get('volume') or 0
+            avg_volume = realtime.get('avg_volume') or 0.0
+
+            # 确保数值类型正确
+            try:
+                price = float(price) if price else 0.0
+                change_pct = float(change_pct) if change_pct else 0.0
+                ma5 = float(ma5) if ma5 else 0.0
+                volume = int(volume) if volume else 0
+                avg_volume = float(avg_volume) if avg_volume else 0.0
+            except (ValueError, TypeError):
+                price = change_pct = ma5 = avg_volume = 0.0
+                volume = 0
 
             signal_class = 'target-signal' if action != '持有' else ''
             status_color = '#f44336' if action != '持有' else '#4CAF50'
 
             # 计算盈亏
-            holdings = target.get('holdings', 0)
-            cost_price = target.get('cost_price', 0)
+            holdings = target.get('holdings', 0) or 0
+            cost_price = target.get('cost_price', 0) or 0.0
             profit_pct = ((price - cost_price) / cost_price * 100) if cost_price > 0 else 0
 
             html_content += f"""
