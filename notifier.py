@@ -87,6 +87,7 @@ class PushPlusNotifier:
         ma5 = realtime_data.get('ma5') or 0.0
         avg_volume = realtime_data.get('avg_volume') or 0.0
         volume = realtime_data.get('volume') or 0
+        amount = realtime_data.get('amount') or 0.0  # 添加成交额
         high = realtime_data.get('high') or price
         low = realtime_data.get('low') or price
 
@@ -97,12 +98,12 @@ class PushPlusNotifier:
             prev_close = float(prev_close) if prev_close else 0.0
             ma5 = float(ma5) if ma5 else 0.0
             avg_volume = float(avg_volume) if avg_volume else 0.0
-            volume = int(volume) if volume else 0
+            volume = float(volume) if volume else 0.0  # 改为float以支持小数
+            amount = float(amount) if amount else 0.0
             high = float(high) if high else price
             low = float(low) if low else price
         except (ValueError, TypeError):
-            price = change_pct = prev_close = ma5 = avg_volume = 0.0
-            volume = 0
+            price = change_pct = prev_close = ma5 = avg_volume = volume = amount = 0.0
             high = low = price
 
         # 计算安全的显示值，避免除零错误
@@ -419,11 +420,10 @@ class PushPlusNotifier:
                 price = float(price) if price else 0.0
                 change_pct = float(change_pct) if change_pct else 0.0
                 ma5 = float(ma5) if ma5 else 0.0
-                volume = int(volume) if volume else 0
+                volume = float(volume) if volume else 0.0  # 改为float以支持小数
                 avg_volume = float(avg_volume) if avg_volume else 0.0
             except (ValueError, TypeError):
-                price = change_pct = ma5 = avg_volume = 0.0
-                volume = 0
+                price = change_pct = ma5 = avg_volume = volume = 0.0
 
             signal_class = 'target-signal' if action != '持有' else ''
             status_color = '#f44336' if action != '持有' else '#4CAF50'
