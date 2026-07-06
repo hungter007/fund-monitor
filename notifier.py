@@ -105,6 +105,23 @@ class PushPlusNotifier:
             volume = 0
             high = low = price
 
+        # 计算安全的显示值，避免除零错误
+        ma5_diff_pct = 0.0
+        if ma5 > 0:
+            ma5_diff_pct = (price - ma5) / ma5 * 100
+        else:
+            ma5_diff_pct = 0.0
+
+        # 计算盈亏情况
+        holdings = target.get('holdings', 0) or 0
+        cost_price = target.get('cost_price', 0) or 0.0
+        current_value = holdings * price
+        cost_value = holdings * cost_price
+        profit_loss = current_value - cost_value
+        profit_pct = 0.0
+        if cost_value > 0:
+            profit_pct = profit_loss / cost_value * 100
+
         # 计算盈亏情况
         holdings = target.get('holdings', 0)
         cost_price = target.get('cost_price', 0)
@@ -222,7 +239,7 @@ class PushPlusNotifier:
                         </div>
                         <div class="data-row">
                             <span class="label">与MA5差距:</span>
-                            <span class="value {('red' if price < ma5 else 'green')}">{((price - ma5) / ma5 * 100):+.2f}%</span>
+                            <span class="value {('red' if price < ma5 else 'green')}">{ma5_diff_pct:+.2f}%</span>
                         </div>
                         <div class="data-row">
                             <span class="label">成交量:</span>
