@@ -145,12 +145,19 @@ class FundMonitor:
             ma5 = self.fetcher.calculate_ma5(historical_data)
             if ma5:
                 print(f"✓ MA5: {ma5:.4f}")
+                realtime_data['ma5'] = ma5  # 存储MA5到实时数据中
+            else:
+                print(f"⚠️ 无法计算MA5")
+                realtime_data['ma5'] = 0.0
 
             # 计算平均成交量
             avg_volume = self.fetcher.calculate_avg_volume(historical_data)
             if avg_volume:
                 print(f"✓ 5日均量: {avg_volume:.2f}亿元")
                 realtime_data['avg_volume'] = avg_volume
+            else:
+                print(f"⚠️ 无法计算5日均量")
+                realtime_data['avg_volume'] = 0.0
 
             # 分析离场信号（普通规则）
             signals = self.analyzer.analyze(target, realtime_data, historical_data)
@@ -227,10 +234,9 @@ class FundMonitor:
                 analysis = result.get('analysis', {})
                 if analysis.get('action') != '持有':
                     print("📱 准备发送离场信号通知...")
-                    # 传递完整的数据，包括技术指标
+                    # 传递完整的数据，包括技术指标和信号详情
                     enhanced_data = {
                         **result.get('realtime_data', {}),
-                        'ma5': realtime_data.get('ma5') if 'realtime_data' in locals() else None,
                         'signals': result.get('signals', []),
                         'historical_summary': self._summarize_historical_data(result.get('historical_data', []))
                     }

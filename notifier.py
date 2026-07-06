@@ -141,26 +141,58 @@ class PushPlusNotifier:
                 signals_html += f"<p style='margin: 2px 0 10px 10px; font-size: 12px; color: #856404;'>理由: {signal.get('reason', '')}</p>"
             signals_html += "</div>"
 
-        # 完整的AI分析内容
+        # 完整的AI分析内容（增强版）
         ai_analysis_html = ""
         if analysis:
             ai_analysis_html = """
             <div style="background: #e3f2fd; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #2196F3;">
-                <p style="margin: 0 0 10px 0; color: #1976D2;"><strong>🤖 AI深度分析:</strong></p>
+                <p style="margin: 0 0 10px 0; color: #1976D2;"><strong>🤖 AI深度分析报告:</strong></p>
                 <div style="font-size: 14px; line-height: 1.8; color: #333;">
             """
 
             # 基础分析信息
-            ai_analysis_html += f"<p style='margin: 5px 0;'><strong>建议操作:</strong> {analysis.get('action', '未知')}</p>"
-            ai_analysis_html += f"<p style='margin: 5px 0;'><strong>趋势判断:</strong> {analysis.get('trend', '未知')}</p>"
-            ai_analysis_html += f"<p style='margin: 5px 0;'><strong>置信度:</strong> {analysis.get('confidence', '中')}</p>"
+            ai_analysis_html += f"<div style='background: #fff; padding: 10px; margin: 10px 0; border-radius: 3px;'>"
+            ai_analysis_html += f"<p style='margin: 0 0 8px 0;'><strong>📊 分析结论:</strong></p>"
+            ai_analysis_html += f"<p style='margin: 3px 0;'>• <strong>建议操作:</strong> {analysis.get('action', '未知')}</p>"
+            ai_analysis_html += f"<p style='margin: 3px 0;'>• <strong>趋势判断:</strong> {analysis.get('trend', '未知')}</p>"
+            ai_analysis_html += f"<p style='margin: 3px 0;'>• <strong>置信度:</strong> {analysis.get('confidence', '中')}</p>"
+            ai_analysis_html += "</div>"
+
+            # 分析输入数据
+            analysis_process = analysis.get('analysis_process', {})
+            if analysis_process:
+                input_data = analysis_process.get('input_data', {})
+                ai_analysis_html += f"<div style='background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px;'>"
+                ai_analysis_html += f"<p style='margin: 0 0 8px 0;'><strong>📥 分析输入数据:</strong></p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 标的: {input_data.get('target_name', '未知')}</p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 当前价格: {input_data.get('current_price', 0):.4f}</p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 涨跌幅: {input_data.get('change_pct', 0):+.2f}%</p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 5日均线: {input_data.get('ma5', 0):.4f}</p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 5日均量: {input_data.get('avg_volume', 0):.2f}亿</p>"
+
+                signals = input_data.get('signals', [])
+                if signals:
+                    ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 触发信号: {', '.join(signals)}</p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 模型: {analysis_process.get('model_used', '未知')}</p>"
+                ai_analysis_html += f"<p style='margin: 2px 0; font-size: 12px;'>• 分析时间: {analysis_process.get('analysis_time', '未知')}</p>"
+                ai_analysis_html += "</div>"
 
             # 详细分析理由
             reason = analysis.get('reason', '')
             if reason:
-                ai_analysis_html += f"<div style='margin: 10px 0; padding: 10px; background: #fff; border-radius: 3px;'>"
-                ai_analysis_html += f"<p style='margin: 0 0 5px 0;'><strong>📝 详细分析:</strong></p>"
-                ai_analysis_html += f"<p style='margin: 0; font-size: 13px; line-height: 1.6;'>{reason}</p>"
+                ai_analysis_html += f"<div style='background: #fff; padding: 10px; margin: 10px 0; border-radius: 3px;'>"
+                ai_analysis_html += f"<p style='margin: 0 0 8px 0;'><strong>📝 详细分析理由:</strong></p>"
+                ai_analysis_html += f"<p style='margin: 0; font-size: 13px; line-height: 1.6; color: #333;'>{reason}</p>"
+                ai_analysis_html += "</div>"
+
+            # AI原始响应
+            ai_raw_response = analysis_process.get('ai_raw_response', '')
+            if ai_raw_response:
+                ai_analysis_html += f"<div style='background: #fff3e0; padding: 10px; margin: 10px 0; border-radius: 3px;'>"
+                ai_analysis_html += f"<p style='margin: 0 0 8px 0;'><strong>🤖 AI完整响应:</strong></p>"
+                ai_analysis_html += f"<p style='margin: 0; font-size: 12px; line-height: 1.5; color: #555; font-family: monospace; white-space: pre-wrap;'>{ai_raw_response[:800]}</p>"
+                if len(ai_raw_response) > 800:
+                    ai_analysis_html += f"<p style='margin: 5px 0 0 0; font-size: 11px; color: #999;'>... (内容过长，已截断)</p>"
                 ai_analysis_html += "</div>"
 
             # 风险提示

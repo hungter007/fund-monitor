@@ -85,7 +85,25 @@ class BigModelAnalyzer:
                 print("  AI分析成功")
                 content = result['choices'][0]['message']['content']
 
-                return self._parse_ai_response(content, signals)
+                # 记录完整的AI分析过程
+                analysis_result = self._parse_ai_response(content, signals)
+
+                # 添加分析过程信息
+                analysis_result['analysis_process'] = {
+                    'input_data': {
+                        'target_name': target.get('name', ''),
+                        'current_price': realtime_data.get('price', realtime_data.get('nav', 0)),
+                        'change_pct': realtime_data.get('change_pct', 0),
+                        'ma5': realtime_data.get('ma5', 0),
+                        'avg_volume': realtime_data.get('avg_volume', 0),
+                        'signals': [s.rule_name for s in signals]
+                    },
+                    'ai_raw_response': content,
+                    'model_used': self.model,
+                    'analysis_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+
+                return analysis_result
             elif response.status_code == 429:
                 print("  API速率限制，使用备用分析")
                 return self._fallback_analysis(signals, target, realtime_data)
