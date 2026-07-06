@@ -227,10 +227,17 @@ class FundMonitor:
                 analysis = result.get('analysis', {})
                 if analysis.get('action') != '持有':
                     print("📱 准备发送离场信号通知...")
+                    # 传递完整的数据，包括技术指标
+                    enhanced_data = {
+                        **result.get('realtime_data', {}),
+                        'ma5': realtime_data.get('ma5') if 'realtime_data' in locals() else None,
+                        'signals': result.get('signals', []),
+                        'historical_summary': self._summarize_historical_data(result.get('historical_data', []))
+                    }
                     self.notifier.send_exit_signal(
                         target,
                         analysis,
-                        result.get('realtime_data', {})
+                        enhanced_data
                     )
 
         # 每次都发送汇总报告
@@ -242,6 +249,19 @@ class FundMonitor:
         print(f"{'='*60}")
 
         return results
+
+    def _summarize_historical_data(self, historical_data: List[Dict]) -> Dict:
+        """汇总历史数据用于推送显示"""
+        if not historical_data:
+            return {}
+
+        latest = historical_data[0] if historical_data else {}
+        return {
+            'high': latest.get('high', 0),
+            'low': latest.get('low', 0),
+            'volume': latest.get('volume', 0),
+            'turnover': latest.get('turnover', 0)
+        }
 
     def test_pushplus(self) -> bool:
         """测试PushPlus推送"""
