@@ -61,7 +61,7 @@ class PushPlusNotifier:
             print(f"推送异常: {e}")
             return False
 
-    def send_exit_signal(self, target: Dict, analysis: Dict, realtime_data: Dict) -> bool:
+    def send_exit_signal(self, target: Dict, analysis: Dict, realtime_data: Dict, execution_time = None) -> bool:
         """
         发送离场信号通知（包含完整技术指标和AI分析）
 
@@ -333,8 +333,9 @@ class PushPlusNotifier:
                 </div>
 
                 <div class="footer">
-                    <p style="margin: 0;">🕒 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    <p style="margin: 5px 0 0 0;">此为系统自动分析，仅供参考，投资需谨慎</p>
+                    <p style="margin: 0;">🕒 {'执行时间: ' + execution_time.strftime('%Y-%m-%d %H:%M:%S') if execution_time else datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                    <p style="margin: 5px 0 0 0;">⏰ 监控系统自动执行 | 时区: 北京时间 (UTC+8)</p>
+                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #999;">此为系统自动分析，仅供参考，投资需谨慎</p>
                 </div>
             </div>
         </body>
@@ -344,7 +345,7 @@ class PushPlusNotifier:
         title = f"⚠️ 离场信号: {target['name']} - {analysis.get('action', '持有')}"
         return self.send(title, html_content, template='html')
 
-    def send_summary(self, results: list) -> bool:
+    def send_summary(self, results: list, execution_time = None) -> bool:
         """
         发送监控汇总
 
@@ -456,15 +457,17 @@ class PushPlusNotifier:
                 </div>
 
                 <div class="footer">
-                    <p style="margin: 0;">🕒 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    <p style="margin: 5px 0 0 0;">此为系统自动分析，仅供参考，投资需谨慎</p>
+                    <p style="margin: 0;">🕒 {'执行时间: ' + execution_time.strftime('%Y-%m-%d %H:%M:%S') if execution_time else datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                    <p style="margin: 5px 0 0 0;">⏰ 监控系统自动执行 | 时区: 北京时间 (UTC+8)</p>
+                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #999;">此为系统自动分析，仅供参考，投资需谨慎</p>
                 </div>
             </div>
         </body>
         </html>
         """
 
-        title = f"📊 监控汇总 ({triggered}/{total} 触发信号) - {datetime.now().strftime('%H:%M')}"
+        time_str = execution_time.strftime('%H:%M') if execution_time else datetime.now().strftime('%H:%M')
+        title = f"📊 监控汇总 ({triggered}/{total} 触发信号) - {time_str}"
         return self.send(title, html_content, template='html')
 
     def send_test(self) -> bool:

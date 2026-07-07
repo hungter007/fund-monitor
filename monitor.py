@@ -213,8 +213,10 @@ class FundMonitor:
         Returns:
             所有标的的监控结果
         """
+        execution_time = datetime.now()
         print(f"\n{'='*60}")
-        print(f"开始监控 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"开始监控 - {execution_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"时区信息: 北京时间 (UTC+8)")
         print(f"{'='*60}")
 
         targets = self.config.get('targets', [])
@@ -243,12 +245,13 @@ class FundMonitor:
                     self.notifier.send_exit_signal(
                         target,
                         analysis,
-                        enhanced_data
+                        enhanced_data,
+                        execution_time  # 传递执行时间
                     )
 
         # 每次都发送汇总报告
         if send_notification and self.notifier:
-            self.notifier.send_summary(results)
+            self.notifier.send_summary(results, execution_time)
 
         print(f"\n{'='*60}")
         print(f"监控完成 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
